@@ -33,10 +33,10 @@ def wrap(text):
 
 
 DESCRIPTION = '''
-Deploy IDOL LEMA.
+Deploy IDOL CGA.
 
 ''' + wrap('''\
-This program deploys components of the LEMA system, or resumes a stopped system, or reconfigures an
+This program deploys components of the CGA system, or resumes a stopped system, or reconfigures an
 existing system.  Before running, check and update the configuration in `config/base.env`.
 ''') + '''
 
@@ -52,10 +52,7 @@ The components that can only be deployed using this script are:
 ''') + '''
 
 - entity: storage for application data
-- analysis: media analysis system
-- analysis-live: live media analysis system
 - api: user-facing web server
-- ui: user-facing web server
 
 ''' + wrap('''\
 The components that may be deployed using this script, or may be deployed manually using suitable
@@ -63,7 +60,6 @@ replacements, are:
 ''') + '''
 
 - auth: user-facing web server - Keycloak authentication server
-- filestore: storage for files - Amazon S3-compatible object storage
 - audit: storage for audit logs - PostgreSQL database server
 '''
 

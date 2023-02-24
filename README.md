@@ -1,10 +1,8 @@
-# Law Enforcement Media Application (LEMA)
-
-The following installation steps compliment the full LEMA Administration Guide, available from the [IDOL documentation site](https://www.microfocus.com/documentation/idol/), under "IDOL Government Solutions".
+# Concept Graph Analytics (CGA)
 
 ## Basic deployment
 
-To deploy LEMA to a Docker system, use the `deploy.py` tool, which requires Docker Compose.
+To deploy CGA to a Docker system, use the `deploy.py` tool, which requires Docker Compose.
 Required software versions:
 - Python 3, version 3.6 or later
 - Docker, version 20.10.22 or later
@@ -27,13 +25,11 @@ Run the `deploy.py` tool using Python.  (Much like when running `docker`, you
 may have to run it as a different user with sufficient permissions to manage Docker containers.)
 
 ```
-python3 deploy.py --init auth entity filestore analysis audit api ui
+python3 deploy.py --init auth entity audit cga
 ```
 
-With the default configuration, the LEMA UI will be available at `https://localhost:8070` once the
-system has started.
-
-After the system has started, log in with a user that has the `admin` role. The LEMA UI will then perform a one off initialization. 
+After the system has started, log into the Swagger UI `localhost:8060/swagger/` with a user that has the `admin` role
+and call the POST `/meta/initialize` endpoint to perform a one off initialization.
 
 To show options and other usage information, run:
 
@@ -50,7 +46,7 @@ of the settings.
 
 ## Encryption
 
-By default, the user-facing servers (authentication server, API, and UI) only accept encrypted 
+By default, the user-facing servers (authentication server and API) only accept encrypted 
 connections.  For this to work, you must obtain TLS certificates and copy them into the `config` 
 directory.  The required files are:
 
@@ -58,27 +54,25 @@ directory.  The required files are:
 - `config/https/api/tls.crt`: Server certificate for the API.
 - `config/https/auth/tls.key`: Private key for the authentication server.
 - `config/https/auth/tls.crt`: Server certificate for the authentication server.
-- `config/ui/auth/nginx.key`: Private key for the UI.
-- `config/ui/auth/nginx.crt`: Server certificate for the UI.
 
 ## Further examples
 
 To use HTTP instead of HTTPS, for testing purposes only, run:
 
 ```
-python3 deploy.py --disable-encryption --init auth entity filestore analysis analysis-live audit api ui
+python3 deploy.py --disable-encryption --init auth entity audit cga
 ```
 
 > note: changes to the encryption state of a deployed system require manual deletion of the realm in Keycloak before running `deploy.py` with the new state.
 
-To resume a stopped LEMA system, or to apply changes made to configuration files, or to change which
+To resume a stopped CGA system, or to apply changes made to configuration files, or to change which
 components are deployed: run the normal command to deploy, but without the `--init` argument:
 
 ```
-python3 deploy.py auth entity filestore analysis analysis-live audit api ui
+python3 deploy.py auth entity audit cga
 ```
 
-To stop and remove deployed LEMA services, run the Python `deploy.py` tool with no arguments:
+To stop and remove deployed CGA services, run the Python `deploy.py` tool with no arguments:
 
 ```
 python3 deploy.py
@@ -92,7 +86,7 @@ configure hosts and ports in the files in `config/`, and then run on separate ho
 
 ```
 python3 deploy.py audit
-python3 deploy.py --init auth entity analysis analysis-live api ui
+python3 deploy.py --init auth entity cga
 ```
 
 ## System information
@@ -107,14 +101,10 @@ while others listen on 127.0.0.1 only):
 | entity        | 8021     | no         | ACI port of IDOL Content database backend for the Gremlin database   |
 | entity        | 8022     | no         | Index port of IDOL Content database backend for the Gremlin database |
 | entity        | 8023     | no         | Port of Cassandra database backend for the Gremlin database          |
-| filestore     | 8030     | no         | S3-compatible object storage                                         |
-| analysis      | 8040     | no         | NiFi server for media analysis (API and admin UI)                    |
-| analysis-live | 8080     | no         | ACI port of IDOL Media Server used for live media analysis           |
 | audit         | 8050     | no         | PostgreSQL database storing audit logs                               |
 | api           | 8060     | yes        | System HTTP API                                                      |
-| ui            | 8070     | yes        | LEMA UI                                                              |
 
-Docker volumes are created with the prefix `micro-focus-idol-lema_`, which can be changed using the
+Docker volumes are created with the prefix `micro-focus-idol-cga_`, which can be changed using the
 `COMPOSE_PROJECT_NAME` setting.  The following volumes are created:
 
 | **Component** | **Volume name**                        | **Purpose**                                      |
@@ -123,10 +113,7 @@ Docker volumes are created with the prefix `micro-focus-idol-lema_`, which can b
 | entity        | entity-storagedb-data                  | Application data                                 |
 | entity        | entity-indexdb-data                    | Search index for application data                |
 | entity        | entity-indexdb-license-data            | Cache for license information                    |
-| filestore     | filestore-service-data                 | Uploaded and generated files                     |
-| analysis-live | analysis-live-mediaserver-license-data | Cache for license information                    |
-| analysis-live | analysis-live-mediaserver-output       | Temporary video and data files for live analysis |
 | audit         | audit-db-data                          | Audit logs                                       |
 
-All containers connect to a Docker network called `micro-focus-idol-lema_main`.  The
-`micro-focus-idol-lema` prefix can be changed using the `COMPOSE_PROJECT_NAME` setting.
+All containers connect to a Docker network called `micro-focus-idol-cga_main`.  The
+`micro-focus-idol-cga` prefix can be changed using the `COMPOSE_PROJECT_NAME` setting.
