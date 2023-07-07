@@ -151,7 +151,7 @@ def get_compose_args(components, component_paths, options,
     compose_args.extend(['--env-file', build_env_file(env_paths)])
     for compose_path in get_compose_paths(compose_components, component_paths):
         compose_args.extend(['--file', compose_path])
-    compose_args.append(command)
+    compose_args.extend(command)
     if detach:
         compose_args.append('--detach')
     if remove:
@@ -159,13 +159,11 @@ def get_compose_args(components, component_paths, options,
     return compose_args
 
 
-def run_compose(components, component_paths, options, detach=True, remove=False, log_level='info'):
-    if not options.skip_pull:
-        run_process(get_compose_args(components, component_paths, options,
-                                     'pull', log_level=log_level))
-    if not options.skip_deploy:
-        run_process(get_compose_args(components, component_paths, options,
-                                     'up', detach, remove, log_level=log_level))
+def run_compose(components, component_paths, options, skip_pull, detach=True, remove=False, log_level='info'):
+    command = ['up', f'--pull={"never" if skip_pull else "always"}', '--build']
+    if options.skip_deploy:
+        command.append('--no-start')
+    run_process(get_compose_args(components, component_paths, options, command, detach, remove, log_level=log_level))
 
 
 def deploy(components, component_paths, options):
@@ -174,7 +172,7 @@ def deploy(components, component_paths, options):
         # should be last
         components.append('unencrypted')
 
-    run_compose(components, component_paths, options, remove=True)
+    run_compose(components, component_paths, options, options.skip_pull, remove=True)
 
 
 def initialise(component_paths, options):
@@ -183,7 +181,7 @@ def initialise(component_paths, options):
         # should be last
         components.append('unencrypted')
 
-    run_compose(components, component_paths, options, detach=False, log_level='error')
+    run_compose(components, component_paths, options, options.skip_pull, detach=False, log_level='error')
 
 
 def main():
@@ -199,7 +197,7 @@ def main():
     # If no components were listed to be started, perform docker compose down
     else:
         run_process(get_compose_args(component_paths.keys(), component_paths, program_args,
-                                     'down', remove=True, log_level='error'))
+                                     ['down'], remove=True, log_level='error'))
 
 
 
