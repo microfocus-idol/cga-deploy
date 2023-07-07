@@ -46,7 +46,7 @@ of the settings.
 
 ## Encryption
 
-By default, the user-facing servers (authentication server and API) only accept encrypted 
+By default, the user-facing servers (authentication server and API) only accept encrypted
 connections.  For this to work, you must obtain TLS certificates and copy them into the `config` 
 directory.  The required files are:
 
@@ -107,13 +107,13 @@ while others listen on 127.0.0.1 only):
 Docker volumes are created with the prefix `opentext-idol-cga_`, which can be changed using the
 `COMPOSE_PROJECT_NAME` setting.  The following volumes are created:
 
-| **Component** | **Volume name**                        | **Purpose**                                      |
-|---------------|----------------------------------------|--------------------------------------------------|
-| auth          | auth-db-data                           | Authentication server configuration              |
-| entity        | entity-storagedb-data                  | Application data                                 |
-| entity        | entity-indexdb-data                    | Search index for application data                |
-| entity        | entity-indexdb-license-data            | Cache for license information                    |
-| audit         | audit-db-data                          | Audit logs                                       |
+| **Component** | **Volume name**              | **Purpose**                                      |
+|---------------|------------------------------|--------------------------------------------------|
+| auth          | auth-db-data                 | Authentication server configuration              |
+| entity        | entity-storagedb-data        | Application data                                 |
+| entity        | entity-indexdb-data          | Search index for application data                |
+| entity        | entity-indexdb-license-data  | Cache for license information                    |
+| audit         | audit-db-data                | Audit logs                                       |
 
 All containers connect to a Docker network called `opentext-idol-cga_main`.  The
 `opentext-idol-cga` prefix can be changed using the `COMPOSE_PROJECT_NAME` setting.
